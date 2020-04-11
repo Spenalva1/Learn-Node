@@ -48,6 +48,24 @@ exports.register = async (req, res, next) => {
   });
   const register = promisify(User.register, User);
   await register(user, req.body.password);
-  res.send('nice');
   next();
+};
+
+exports.account = (req, res) => {
+  res.render('account', { title: 'Edit your account' });
+};
+
+exports.updateAccount = async (req, res) => {
+  const updates = {
+    name: req.body.name,
+    email: req.body.email,
+  };
+
+  const user = await User.findOneAndUpdate(
+    { _id: req.user._id },
+    { $set: updates },
+    { new: true, runValidators: true, context: 'query' }
+  );
+  req.flash('success', 'Your account has been updated');
+  res.redirect('back');
 };
