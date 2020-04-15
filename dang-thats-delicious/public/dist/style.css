@@ -754,6 +754,9 @@ label {
   -ms-flex-pack: distribute;
       justify-content: space-around; }
 
+.store__action a {
+  color: white; }
+
 .store__action {
   font-size: 10px; }
   .store__action svg {
