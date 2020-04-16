@@ -54,8 +54,22 @@ exports.createStore = async (req, res) => {
 };
 
 exports.getStores = async (req, res) => {
-  const stores = await Store.find().populate('reviews');
-  res.render('stores', { title: 'Stores', stores });
+  // get current page
+  const page = req.params.page || 1;
+  // how many stores show on each page
+  const limit = 6;
+  // how many stores to be skipped acording to the current page
+  const skip = page * limit - limit;
+  const storesPromise = Store.find()
+    .skip(skip)
+    .limit(limit);
+  const countPromise = Store.count();
+  const [stores, count] = await Promise.all([storesPromise, countPromise]);
+  const pages = Math.ceil(count / limit);
+  if (!stores.length) {
+    return res.redirect(`/stores/page/${pages}`);
+  }
+  res.render('stores', { title: 'Stores', stores, page, pages, count });
 };
 
 exports.editStore = async (req, res) => {
